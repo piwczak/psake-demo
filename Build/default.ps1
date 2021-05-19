@@ -13,6 +13,7 @@ properties {
 	$publishedMSTestTestsDirectory = "$temporaryOutputDirectory\_PublishedMSTestTests"
 	$publishedApplicationDirectory = "$temporaryOutputDirectory\_PublishedApplications"
 	$publishedWebsitesDirectory = "$temporaryOutputDirectory\_PublishedWebsites"
+	$publishedLibrariesDirectory = "$temporaryOutputDirectory\_PublishedLibraries"
 
 	$testResultDirectory = "$outputDirectory\TestResults"
 	$NUnitTestResultDirectory = "$testResultDirectory\NUnit"
@@ -27,6 +28,7 @@ properties {
 
 	$packagesOutputDirectory = "$outputDirectory\Packages"
 	$applicationsOutputDirectory = "$packagesOutputDirectory\Applications"
+	$librariesOutputDirectory = "$packagesOutputDirectory\Libraries"
 
 	$buildConfiguration = "Release"
 	$buildPlatform = "Any CPU"
@@ -89,7 +91,7 @@ task Compile `
 	Write-Host "Building solution $solutionFile"
 	#msbuild $SolutionFile "/p:Configuration=$buildConfiguration;Platform=$buildPlatform;OutDir=$temporaryOutputDirectory"
 
-	Exec { msbuild $SolutionFile "/p:Configuration=$buildConfiguration;Platform=$buildPlatform;OutDir=$temporaryOutputDirectory" }
+	Exec { msbuild $SolutionFile "/p:Configuration=$buildConfiguration;Platform=$buildPlatform;OutDir=$temporaryOutputDirectory;NuGetExePath=$nugetExe" }
 }
 
 task TestNUnit `
@@ -205,7 +207,7 @@ task Test -depends Compile, Clean -description "Run unit tests" 
 task Package `
 	-depends Compile, Test `
 	-description "Package applications" `
-	-requiredVariables publishedWebsitesDirectory, publishedApplicationsDirectory, applicationsOutputDirectory ` 
+	-requiredVariables publishedWebsitesDirectory, publishedApplicationsDirectory, applicationsOutputDirectory, publishedLibrariesDirectory, librariesOutputDirectory ` 
 {
 	#Merge published websites and published applications paths
 	$applications = @(Get-ChildItem $publishedWebsitesDirectory) + @(Get-ChildItem $publishedApplicationsDirectory)
@@ -253,9 +255,29 @@ task Package `
 
 			Exec { &$7ZipExe a -r -mx3 $archivePath $inputDirectory }
 		}
+
+		# Moving NuGet libraries to the package directory
+		if (Test-Path $publishedLibrariesDirectory)
+		{
+			if (!(Test-Path $librariesOutputDirectory))
+			{
+				Mkdir $librariesOutputDirectory | Out-Null
+
+				Get-ChildItem -Path $publishedLibrariesDirectory -Filter "*.nupkg" -Recurse | Move-Item -Destination $librariesOutputDirectory
+			}
+		}
 	}
 }
 
-task Clean -description "Remove temporary files" { 
-  Write-Host $cleanMessage
+task Clean `
+	-depends Compile, Test, Package `
+	-description "Remove temporary files" `
+	-requiredVariables temporaryOutputDirectory
+{ 
+	if (Test-Path $temporaryOutputDirectory)
+	{
+		Write-Host "Removing temporary output directory located at $temporaryOutputDirectory"
+
+		Remove-Item $temporaryOutputDirectory -Force -Recurse
+	}
 }
