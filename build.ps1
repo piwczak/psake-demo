@@ -13,18 +13,19 @@ remove-module [p]sake
 
 # find psake's path
 $psakeModule = (Get-ChildItem (".\Packages\psake*\tools\psake.psm1")).FullName | Sort-Object $_ | select -last 1
+$psakeScript = (Get-ChildItem (".\Packages\Pluralsight.Build*\tools\default.ps1")).FullName | Sort-Object $_ | select -last 1
  
 Import-Module $psakeModule
 
 # you can write statements in multiple lines using `
-Invoke-psake -buildFile .\Build\default.ps1 `
+Invoke-psake -buildFile $psakeScript `
 			 -taskList Clean `
 			 -framework 4.5.2 `
 		     -properties @{ 
 				 "buildConfiguration" = "Release"
 				 "buildPlatform" = "Any CPU"} `
 			 -parameters @{ 
-				 "solutionFile" = "..\psake.sln"
+				 "solutionFile" = Resolve-Path(".\psake.sln")
 				 "buildNumber"= $buildNumber
 				 "branchName" = $branchName
 				 "gitCommitHash" = $gitCommitHash

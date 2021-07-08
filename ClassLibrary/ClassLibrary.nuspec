@@ -1,0 +1,15 @@
+﻿<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>$id$</id>
+        <version>$version$</version>
+        <title>Class Library</title>
+        <authors>$author$</authors>
+        <owners>Pluralsight</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Class library used for Pluralsight course &quot;Continuous Integration with psake and TeamCity: Getting Started&quot;</description>
+        <releaseNotes>[release notes]</releaseNotes>
+        <copyright>Pluralsight Copyright 2015</copyright>
+        <tags></tags>
+    </metadata>
+</package>

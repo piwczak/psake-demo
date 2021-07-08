@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Pluralsight.NUnitRunner</id>
+    <version>1.0.0</version>
+    <title>Pluralsight NUnit Runner</title>
+    <authors>Fabien Ruffin</authors>
+    <owners>Pluralsight</owners>
+    <iconUrl>http://static.fabienruffin.com/fabienruffin/2015/09/logo-128x128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This package will register the build target for the NUnit test runner, to be used in conjunction with Pluralsight.Build. This package was build for the Pluralsight course &quot;Continuous Integration with psake and TeamCity: Getting Started&quot;</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Pluralsight Copyright 2015</copyright>
+    <tags>pluralsight nunit test runner build psake</tags>
+    <dependencies>
+      <dependency id="NUnit" version="2.6.0" />
+    </dependencies>
+  </metadata>
+</package>
